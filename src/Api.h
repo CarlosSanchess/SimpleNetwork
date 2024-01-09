@@ -2,6 +2,9 @@
 #include <sys/socket.h> //C socket API
 #include <stdlib.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 
 
 #define SIZE 50
@@ -23,12 +26,13 @@ int new_Socket(){
     }
     return s;
 }
-FILE *open_File(char *file, char *mode)
+FILE *open_File(char *file, char *mode, int socket)
 {
     FILE *fp = fopen(file, mode);
     if (fp == NULL)
     {
         perror("Error opening file");
+        close(socket);
         exit(EXIT_FAILURE);
     }
     return fp;

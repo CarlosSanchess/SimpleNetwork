@@ -1,13 +1,9 @@
 #include "Api.h"
 
-#include <netinet/ip.h> 
-#include <arpa/inet.h>
-
 //Create Socket 
 //Bind() Socket to that port
 //Put the socket to listen()
 //Accept() connection
-//Send Data to the Client or recv, in this case is going to be listen
 
 
 
@@ -28,8 +24,8 @@ int main()
     int client = establishing_Connection(socket);
 
     fp = getFilePointer(client);
-    while(dataReceived = recv(client,buffer,sizeof(buffer),0) > 0){ //Do this in a function that returns a FILE* fp
-       fwrite(buffer,sizeof(buffer),1,fp);
+    while(dataReceived = recv(client,buffer,sizeof(buffer),0) > 0){ 
+       fwrite(buffer, 1, strlen(buffer), fp); //Prevents from writting Null data of buffer
        memset(buffer, 0, sizeof(buffer));
     }
 
@@ -76,7 +72,7 @@ FILE* getFilePointer(int client){
 
 
 
-   while ((dataReceived = recv(client, buffer, sizeof(buffer), 0)) > 0) { //Do this in a function that returns a FILE* fp
+   while ((dataReceived = recv(client, buffer, sizeof(buffer), 0)) > 0) { 
         if(aux == 0){
             fileName = (char*)malloc(sizeof(char) * (strlen(buffer) * strlen("_clone"))); // +1
             if(!fileName){
@@ -87,9 +83,9 @@ FILE* getFilePointer(int client){
             strcat(buffer,"_clone");
             strcat(fileName, buffer);
         }else if(aux == 1){
-                fileName = (char*)realloc(fileName,sizeof(fileName) + strlen(buffer)); //No need to NULL terminate it(?), makes sence the "+1"
+                fileName = (char*)realloc(fileName,sizeof(fileName) + strlen(buffer)); 
                 strcat(fileName,buffer);    
-                fp = open_File(fileName,"wb");
+                fp = open_File(fileName,"wb", client);
                 memset(buffer, 0, sizeof(buffer));
                 break;
             }

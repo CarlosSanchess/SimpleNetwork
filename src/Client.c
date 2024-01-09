@@ -1,12 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 #include "Api.h"
 
-//Problemas com inicialização do buffer de server message.
 
 
 int establishing_Connection(int socket, char *serverIp);
@@ -29,6 +23,7 @@ int main(int argc, char const *argv[])
     file = bindFile(argv[2]);
 
     establishing_Connection(client_socket, argv[1]);
+    FILE *fp = open_File(argv[2],"rb",client_socket);
 
     safeStrCopy(server_message, file.name, sizeof(server_message));
     send(client_socket, server_message, sizeof(server_message), 0);
@@ -36,12 +31,9 @@ int main(int argc, char const *argv[])
     safeStrCopy(server_message, file.type, sizeof(server_message));
     send(client_socket, server_message, sizeof(server_message), 0);   
     memset(server_message,0, sizeof(server_message));
- 
 
-
-     FILE *fp = open_File(argv[2],"rb");
-     size_t bytesRead;
-    while((bytesRead = fread(server_message, sizeof(server_message), 1, fp)) > 0){
+    size_t bytesRead;
+    while((bytesRead = fread(server_message, 1, sizeof(server_message), fp)) > 0){
         ssize_t bytes_sent = send(client_socket, &server_message, sizeof(server_message), 0);
         if (bytes_sent == -1)
         {
@@ -51,7 +43,6 @@ int main(int argc, char const *argv[])
         } 
          memset(server_message,0, sizeof(server_message));
     }
-   
     printf("Data sent successfully\n");
 
     close(client_socket);
@@ -78,7 +69,7 @@ int establishing_Connection(int socket, char * serverIp)
     return con;
 }
 
-void sendFileName(FileData file, char *server_message, int client_socket){ // TODO handle ERRORS in send
+void sendFileName(FileData file, char *server_message, int client_socket){ // Find Bug
     safeStrCopy(server_message, file.name, sizeof(server_message));
     send(client_socket, server_message, sizeof(server_message), 0);
     memset(server_message,0, sizeof(server_message));
